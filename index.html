@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VN Toolkit – Bộ công cụ tiện ích Việt Nam</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+.tab-btn{padding:9px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit}
+.tab-btn:hover{background:rgba(255,255,255,.06);color:#e2e8f0}
+.tab-btn.act{background:rgba(218,37,29,.2);color:#f87171;border-color:rgba(218,37,29,.4)}
+.card{background:#1e2230;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 20px;margin-bottom:12px}
+.fr{display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);gap:10px}
+.fr:last-child{border-bottom:none}
+.fl{font-size:11px;color:#64748b;min-width:120px;flex-shrink:0;padding-top:3px;text-transform:uppercase;letter-spacing:.4px}
+.fv{font-size:14px;color:#e2e8f0;font-weight:500;flex:1;word-break:break-all;line-height:1.5}
+.cb{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#94a3b8;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit;transition:all .12s}
+.cb:hover{background:rgba(255,255,255,.06);color:#e2e8f0}
+.cb.ok{background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.3)}
+.pb{padding:10px 22px;border-radius:8px;border:none;background:linear-gradient(135deg,#da251d,#ef4444);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;letter-spacing:.2px}
+.pb:hover{opacity:.88;transform:translateY(-1px)}
+.pb:active{transform:translateY(0)}
+.pb2{padding:9px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#e2e8f0;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.pb2:hover{background:rgba(255,255,255,.06)}
+.il{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.il label{font-size:12px;color:#94a3b8;font-weight:500;letter-spacing:.3px}
+.fi{padding:9px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#151824;color:#e2e8f0;font-size:14px;width:100%;font-family:inherit;transition:border-color .15s;outline:none}
+.fi:focus{border-color:rgba(218,37,29,.5)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:16px}
+.bb{padding:10px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:#151824;color:#e2e8f0;font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all .12s;font-family:inherit;line-height:1.4}
+.bb:hover{border-color:rgba(218,37,29,.4);color:#f87171}
+.bb.sel{background:rgba(218,37,29,.2);color:#f87171;border-color:rgba(218,37,29,.4)}
+.qrbox{display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px;background:#151824;border-radius:12px;min-height:120px}
+.st{font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.hint{font-size:13px;color:#475569;text-align:center}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.out{padding:12px 14px;background:#151824;border-radius:8px;font-size:13px;color:#e2e8f0;word-break:break-all;font-family:'SF Mono','Fira Code',monospace;line-height:1.7;border:1px solid rgba(255,255,255,.06)}
+@media(max-width:600px){.g2{grid-template-columns:1fr}.fl{min-width:90px}}
+
+/* Header */
+.header{background:#151824;border-bottom:1px solid rgba(255,255,255,.07);padding:14px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:10}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,#da251d,#ef4444);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.tabs-nav{display:flex;gap:6px;padding:14px 20px;background:#0f1117;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;position:sticky;top:68px;z-index:9}
+.main-content{max-width:920px;margin:0 auto;padding:20px 16px 40px}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{padding:9px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:500;text-transform:uppercase;letter-spacing:.4px;background:#151824}
+.data-table td{padding:9px 12px;font-size:13px;color:#e2e8f0;border-bottom:1px solid rgba(255,255,255,.05)}
+.data-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#151824}
+::-webkit-scrollbar-thumb{background:#da251d;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🇻🇳</div>
+  <div>
+    <div style="font-size:18px;font-weight:700;background:linear-gradient(90deg,#f87171,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent">VN Toolkit</div>
+    <div style="font-size:12px;color:#475569">Bộ công cụ tiện ích Việt Nam · dữ liệu thực tế</div>
+  </div>
+  <div id="badge-gender" class="badge" style="margin-left:auto"></div>
+</div>
+
+<div class="tabs-nav">
+  <button class="tab-btn act" onclick="sw('dancu',this)">👤 Dân cư</button>
+  <button class="tab-btn" onclick="sw('qr',this)">📷 Tạo QR</button>
+  <button class="tab-btn" onclick="sw('bank',this)">🏦 QR Banking</button>
+  <button class="tab-btn" onclick="sw('tools',this)">🔧 Công cụ</button>
+  <button class="tab-btn" onclick="sw('batch',this)">📋 Hàng loạt</button>
+</div>
+
+<div class="main-content">
+
+<!-- PANEL: Dân cư -->
+<div id="p-dancu">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <button class="pb" onclick="gen()">⟳ Tạo ngẫu nhiên</button>
+    <span style="font-size:12px;color:#475569">⚠️ Thông tin hoàn toàn giả – chỉ dùng để test/demo</span>
+  </div>
+  <div class="card" id="dc-card">
+    <p class="hint" style="padding:20px 0">Nhấn "Tạo ngẫu nhiên" để bắt đầu</p>
+  </div>
+  <div class="card">
+    <div class="st" style="font-size:13px">📊 Thông tin bổ sung</div>
+    <div id="dc-extra"></div>
+  </div>
+</div>
+
+<!-- PANEL: QR Code -->
+<div id="p-qr" style="display:none">
+  <div class="card">
+    <div class="st">Chọn loại mã QR</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="bb sel" id="qt-text" onclick="setQT('text',this)">Văn bản</button>
+      <button class="bb" id="qt-url" onclick="setQT('url',this)">URL / Link</button>
+      <button class="bb" id="qt-wifi" onclick="setQT('wifi',this)">WiFi</button>
+      <button class="bb" id="qt-phone" onclick="setQT('phone',this)">Điện thoại</button>
+      <button class="bb" id="qt-email" onclick="setQT('email',this)">Email</button>
+      <button class="bb" id="qt-vcard" onclick="setQT('vcard',this)">vCard</button>
+      <button class="bb" id="qt-geo" onclick="setQT('geo',this)">GPS</button>
+      <button class="bb" id="qt-sms" onclick="setQT('sms',this)">SMS</button>
+    </div>
+    <div id="qr-form"></div>
+    <button class="pb" onclick="genQR()" style="margin-top:4px">🔲 Tạo mã QR</button>
+  </div>
+  <div class="card">
+    <div class="st">Xem trước mã QR</div>
+    <div class="qrbox" id="qr-preview"><p class="hint">Điền thông tin và nhấn "Tạo mã QR"</p></div>
+    <div id="qr-data-text" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- PANEL: QR Banking -->
+<div id="p-bank" style="display:none">
+  <div class="card">
+    <div class="st">Chọn ngân hàng (30 ngân hàng)</div>
+    <div class="g3" id="bank-grid"></div>
+    <div class="g2">
+      <div class="il"><label>Số tài khoản *</label><input class="fi" id="b-acct" placeholder="Nhập số tài khoản"></div>
+      <div class="il"><label>Tên chủ tài khoản</label><input class="fi" id="b-name" placeholder="NGUYEN VAN A"></div>
+    </div>
+    <div class="g2">
+      <div class="il"><label>Số tiền (VNĐ) – 0 = tuỳ ý</label><input class="fi" id="b-amt" type="number" placeholder="100000"></div>
+      <div class="il"><label>Nội dung chuyển khoản</label><input class="fi" id="b-desc" placeholder="Chuyen tien" maxlength="50"></div>
+    </div>
+    <button class="pb" onclick="genBankQR()">🏦 Tạo QR chuyển khoản</button>
+  </div>
+  <div class="card">
+    <div class="st">Mã QR VietQR (EMVCo chuẩn)</div>
+    <div class="qrbox" id="bank-preview"><p class="hint">Chọn ngân hàng và nhập số tài khoản</p></div>
+    <div id="bank-info" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- PANEL: Công cụ -->
+<div id="p-tools" style="display:none">
+  <div class="g2" style="margin-bottom:12px">
+    <div class="card">
+      <div class="st">🔐 Tạo mật khẩu mạnh</div>
+      <div class="il">
+        <label>Độ dài: <span id="pw-len-v">16</span> ký tự</label>
+        <input type="range" id="pw-len" min="6" max="64" value="16" style="width:100%" oninput="document.getElementById('pw-len-v').textContent=this.value">
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;color:#e2e8f0"><input type="checkbox" id="pw-up" checked> Hoa (A-Z)</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;color:#e2e8f0"><input type="checkbox" id="pw-lo" checked> Thường (a-z)</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;color:#e2e8f0"><input type="checkbox" id="pw-num" checked> Số (0-9)</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;color:#e2e8f0"><input type="checkbox" id="pw-sym"> Ký tự đặc biệt</label>
+      </div>
+      <button class="pb" onclick="genPW()">Tạo mật khẩu</button>
+      <div id="pw-out" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <div class="st">🆔 Tạo UUID / NanoID</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="bb sel" id="uuid-v4" onclick="setUV('v4',this)">UUID v4</button>
+        <button class="bb" id="uuid-v1" onclick="setUV('v1',this)">UUID v1</button>
+        <button class="bb" id="uuid-nano" onclick="setUV('nano',this)">NanoID</button>
+      </div>
+      <div class="il">
+        <label>Số lượng</label>
+        <input class="fi" type="number" id="uuid-count" value="5" min="1" max="50">
+      </div>
+      <button class="pb" onclick="genUUIDs()">Tạo UUID</button>
+      <div id="uuid-out" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="st">🔄 Base64 Encode / Decode</div>
+    <div class="il"><label>Văn bản đầu vào</label><textarea class="fi" id="b64-in" rows="3" placeholder="Nhập văn bản hoặc Base64..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="pb" onclick="b64enc()">Encode →</button>
+      <button class="pb2" onclick="b64dec()">← Decode</button>
+    </div>
+    <div id="b64-out"></div>
+  </div>
+  <div class="card">
+    <div class="st">🔢 Định dạng số tiền VNĐ</div>
+    <div class="g2">
+      <div class="il"><label>Nhập số</label><input class="fi" type="number" id="vnd-num" placeholder="1000000" oninput="fmtVND()"></div>
+      <div class="il"><label>Kết quả</label><div id="vnd-out" class="out" style="min-height:42px">—</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="st">🌐 Mã hoá URL / URI Encode</div>
+    <div class="il"><label>Văn bản hoặc URL</label><input class="fi" id="url-in" placeholder="Nhập văn bản hoặc URL cần mã hoá..." oninput="encURL()"></div>
+    <div id="url-out"></div>
+  </div>
+  <div class="card">
+    <div class="st">🎨 Tạo màu ngẫu nhiên</div>
+    <button class="pb" onclick="genColor()">Tạo màu</button>
+    <div id="color-out" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- PANEL: Hàng loạt -->
+<div id="p-batch" style="display:none">
+  <div class="card">
+    <div class="st">📋 Tạo hàng loạt thông tin dân cư</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="il"><label>Số lượng (tối đa 100)</label><input class="fi" type="number" id="bt-count" value="10" min="1" max="100"></div>
+      <div class="il"><label>Giới tính</label>
+        <select class="fi" id="bt-gender">
+          <option value="random">Ngẫu nhiên</option>
+          <option value="Nam">Nam</option>
+          <option value="Nữ">Nữ</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="pb" onclick="genBatch()">⚡ Tạo danh sách</button>
+      <button class="pb2" onclick="copyBatch()">📋 Xuất CSV</button>
+      <button class="pb2" onclick="copyBatchJSON()">{ } Xuất JSON</button>
+    </div>
+  </div>
+  <div id="batch-out"></div>
+</div>
+
+</div><!-- end main-content -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const HO=["Nguyễn","Trần","Lê","Phạm","Hoàng","Huỳnh","Phan","Vũ","Võ","Đặng","Bùi","Đỗ","Hồ","Ngô","Dương","Lý","Đinh","Tô","Tăng","Đoàn","Cao","Lưu","Vương","Triệu","Mai","Lương","Hà","Trịnh","Thái","Tạ"];
+const TDN=["Văn","Hữu","Đức","Quốc","Minh","Trung","Thành","Anh","Hùng","Hoàng","Công","Phước","Gia","Duy","Khoa","Bảo","Thanh","Nhật","Tấn","Chí"];
+const TCN=["An","Bình","Cường","Dũng","Đạt","Giang","Hải","Hiếu","Hùng","Khoa","Kiên","Long","Mạnh","Minh","Nam","Phong","Phúc","Quân","Quang","Sơn","Thắng","Tuấn","Tùng","Việt","Xuân","Đức","Hậu","Khánh","Lâm","Nhân","Trọng","Trí","Vinh","Thịnh","Dương","Phát","Hòa","Lực","Thiện","Hiển"];
+const TDV=["Thị","Ngọc","Thùy","Thu","Hương","Hồng","Lan","Mai","Thanh","Xuân","Tú","Diễm","Phương","Minh","Kim"];
+const TCV=["Anh","Chi","Dung","Giang","Hà","Hạnh","Hiền","Hoa","Hương","Lan","Linh","Mai","My","Nga","Ngân","Ngọc","Nhung","Nhi","Phương","Quỳnh","Tâm","Thảo","Thu","Thủy","Trang","Trinh","Uyên","Vân","Yến","Liên","Mỹ","Châu","Diệu","Hằng","Kiều","Lệ","Tuyết","Trúc","Bích","Hân"];
+const PROVS=[
+  {n:"Hà Nội",c:"001",d:["Hoàn Kiếm","Ba Đình","Đống Đa","Hai Bà Trưng","Hoàng Mai","Long Biên","Cầu Giấy","Thanh Xuân","Tây Hồ","Nam Từ Liêm","Bắc Từ Liêm","Hà Đông","Đông Anh","Gia Lâm","Sóc Sơn"]},
+  {n:"TP Hồ Chí Minh",c:"079",d:["Quận 1","Quận 3","Quận 4","Quận 5","Quận 7","Quận 8","Quận 10","Quận 11","Quận 12","Bình Thạnh","Gò Vấp","Phú Nhuận","Tân Bình","Tân Phú","Bình Tân","Thủ Đức"]},
+  {n:"Đà Nẵng",c:"048",d:["Hải Châu","Thanh Khê","Sơn Trà","Ngũ Hành Sơn","Liên Chiểu","Cẩm Lệ"]},
+  {n:"Hải Phòng",c:"031",d:["Hồng Bàng","Ngô Quyền","Lê Chân","Kiến An","Hải An","Đồ Sơn"]},
+  {n:"Cần Thơ",c:"092",d:["Ninh Kiều","Bình Thuỷ","Cái Răng","Ô Môn","Thốt Nốt"]},
+  {n:"Bình Dương",c:"074",d:["Thủ Dầu Một","Dĩ An","Thuận An","Bến Cát","Tân Uyên"]},
+  {n:"Đồng Nai",c:"075",d:["Biên Hòa","Long Khánh","Long Thành","Nhơn Trạch","Trảng Bom"]},
+  {n:"Bà Rịa - Vũng Tàu",c:"077",d:["Vũng Tàu","Bà Rịa","Long Điền","Phú Mỹ","Châu Đức"]},
+  {n:"Khánh Hòa",c:"056",d:["Nha Trang","Cam Ranh","Cam Lâm","Vạn Ninh","Ninh Hòa"]},
+  {n:"Nghệ An",c:"040",d:["TP Vinh","Cửa Lò","Quỳnh Lưu","Diễn Châu","Nghi Lộc"]},
+  {n:"Thanh Hóa",c:"038",d:["TP Thanh Hóa","Sầm Sơn","Bỉm Sơn","Tĩnh Gia","Hoằng Hóa"]},
+  {n:"Bình Định",c:"052",d:["Quy Nhơn","An Nhơn","Tuy Phước","Hoài Nhơn","Phù Mỹ"]},
+  {n:"Thừa Thiên Huế",c:"046",d:["Huế","Hương Thủy","Hương Trà","Phú Vang","Phú Lộc"]},
+  {n:"Quảng Nam",c:"049",d:["Tam Kỳ","Hội An","Điện Bàn","Duy Xuyên","Đại Lộc"]},
+  {n:"Lâm Đồng",c:"068",d:["Đà Lạt","Bảo Lộc","Đức Trọng","Di Linh","Bảo Lâm"]},
+  {n:"Tiền Giang",c:"082",d:["Mỹ Tho","Gò Công","Cai Lậy","Cái Bè","Tân Phước"]},
+  {n:"Kiên Giang",c:"091",d:["Rạch Giá","Hà Tiên","Phú Quốc","Châu Thành","An Biên"]},
+  {n:"Long An",c:"080",d:["Tân An","Bến Lức","Đức Hòa","Cần Đước","Cần Giuộc"]},
+  {n:"Đắk Lắk",c:"066",d:["Buôn Ma Thuột","Buôn Hồ","Ea H'leo","Krông Pắk","Cư M'gar"]},
+  {n:"Gia Lai",c:"064",d:["Pleiku","An Khê","Ayun Pa","Chư Pưh","Đức Cơ"]},
+  {n:"Quảng Ninh",c:"022",d:["Hạ Long","Cẩm Phả","Uông Bí","Móng Cái","Đông Triều"]},
+  {n:"Hà Tĩnh",c:"042",d:["TP Hà Tĩnh","Hồng Lĩnh","Can Lộc","Thạch Hà","Kỳ Anh"]},
+  {n:"Bắc Ninh",c:"027",d:["TP Bắc Ninh","Từ Sơn","Tiên Du","Yên Phong","Quế Võ"]},
+  {n:"Nam Định",c:"036",d:["TP Nam Định","Mỹ Lộc","Vụ Bản","Ý Yên","Nam Trực"]},
+  {n:"Bình Thuận",c:"060",d:["Phan Thiết","La Gi","Tuy Phong","Bắc Bình","Hàm Thuận Bắc"]},
+];
+const STREETS=["Nguyễn Huệ","Lê Lợi","Trần Hưng Đạo","Điện Biên Phủ","Nguyễn Văn Linh","Lê Văn Lương","Hoàng Diệu","Pasteur","Nam Kỳ Khởi Nghĩa","Cách Mạng Tháng 8","Võ Thị Sáu","Nguyễn Trãi","Phan Chu Trinh","Trần Phú","Hùng Vương","Quang Trung","Lý Thường Kiệt","Phan Đình Phùng","Bà Triệu","Nguyễn Đình Chiểu","Lê Duẩn","Hai Bà Trưng","Tôn Đức Thắng","Phạm Ngũ Lão","Đinh Tiên Hoàng","Lý Tự Trọng","Trần Quang Khải","Bùi Thị Xuân","Ngô Quyền","Trần Quốc Toản"];
+const PFXS=["032","033","034","035","036","037","038","039","070","079","077","076","078","089","090","091","092","093","094","056","058","096","097","098","086","083","084","085","081","082","088"];
+const DANHTOC=["Kinh","Kinh","Kinh","Kinh","Kinh","Tày","Thái","Mường","Khmer","Mông","Nùng","Hoa","Dao","Gia Rai","Ê Đê"];
+const TONGIAO=["Không","Không","Không","Không","Phật giáo","Phật giáo","Công giáo","Tin lành","Cao Đài","Hòa Hảo"];
+const NGHENGHIEP=["Kỹ sư phần mềm","Giáo viên","Bác sĩ","Kế toán","Nhân viên văn phòng","Kinh doanh","Công nhân","Nông dân","Bộ đội","Công an","Y tá","Dược sĩ","Luật sư","Kiến trúc sư","Lập trình viên","Nhà báo","Thiết kế đồ họa","Nhân viên ngân hàng","Chuyên viên marketing","Giảng viên đại học","Tài xế","Đầu bếp","Thợ điện","Kỹ thuật viên","Quản lý kinh doanh"];
+const EMAILDMNS=["gmail.com","yahoo.com","outlook.com","hotmail.com","icloud.com"];
+const BANKS=[
+  {n:"Vietcombank",s:"VCB",b:"970436"},{n:"VietinBank",s:"CTG",b:"970415"},{n:"BIDV",s:"BIDV",b:"970418"},
+  {n:"Agribank",s:"AGR",b:"970405"},{n:"Techcombank",s:"TCB",b:"970407"},{n:"MB Bank",s:"MB",b:"970422"},
+  {n:"ACB",s:"ACB",b:"970416"},{n:"VPBank",s:"VPB",b:"970432"},{n:"TPBank",s:"TPB",b:"970423"},
+  {n:"Sacombank",s:"STB",b:"970403"},{n:"HDBank",s:"HDB",b:"970437"},{n:"VIB",s:"VIB",b:"970441"},
+  {n:"OCB",s:"OCB",b:"970448"},{n:"MSB",s:"MSB",b:"970426"},{n:"SeABank",s:"SSB",b:"970440"},
+  {n:"SHB",s:"SHB",b:"970443"},{n:"Eximbank",s:"EIB",b:"970431"},{n:"NamABank",s:"NAB",b:"970428"},
+  {n:"LienVietPostBank",s:"LPB",b:"970449"},{n:"BacABank",s:"BAB",b:"970409"},
+  {n:"PVcomBank",s:"PVCB",b:"970412"},{n:"NCB",s:"NCB",b:"970419"},{n:"ABBANK",s:"ABB",b:"970425"},
+  {n:"KienlongBank",s:"KLB",b:"970452"},{n:"CAKE",s:"CAKE",b:"546034"},{n:"Ubank",s:"UB",b:"546035"},
+  {n:"Bản Việt",s:"VCCB",b:"970454"},{n:"GPBank",s:"GPB",b:"970408"},{n:"OceanBank",s:"OJB",b:"970414"},
+  {n:"VietBank",s:"VBB",b:"970433"},
+];
+
+// ── UTILS ─────────────────────────────────────────────────────
+const r=a=>a[Math.floor(Math.random()*a.length)];
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const p=(n,l)=>String(n).padStart(l,'0');
+function rmAcc(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[đĐ]/g,c=>c==="đ"?"d":"D")}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function genPerson(forceGender){
+  const gender=forceGender||(Math.random()>.5?"Nam":"Nữ");
+  const prov=r(PROVS),dist=r(prov.d),street=r(STREETS),sn=ri(1,999);
+  const yr=ri(1968,2005),mo=ri(1,12),dy=ri(1,28);
+  const gc=gender==="Nam"?(yr>=2000?"2":"0"):(yr>=2000?"3":"1");
+  const cccd=prov.c+gc+p(yr%100,2)+p(ri(1,999999),6);
+  const phone=r(PFXS)+p(ri(0,9999999),7);
+  const td=gender==="Nam"?r(TDN):r(TDV);
+  const tc=gender==="Nam"?r(TCN):r(TCV);
+  const hoTen=`${r(HO)} ${td} ${tc}`;
+  const emailLocal=rmAcc(tc).toLowerCase()+ri(1,999);
+  const email=emailLocal+"@"+r(EMAILDMNS);
+  return{hoTen,gioiTinh:gender,ngaySinh:`${p(dy,2)}/${p(mo,2)}/${yr}`,
+    danToc:r(DANHTOC),tonGiao:r(TONGIAO),ngheNghiep:r(NGHENGHIEP),
+    queQuan:`${dist}, ${prov.n}`,
+    diaChiThuongTru:`Số ${sn} ${street}, ${dist}, ${prov.n}`,
+    cccd,soDienThoai:phone,email,tinh:prov.n};
+}
+
+// ── TAB ───────────────────────────────────────────────────────
+function sw(id,btn){
+  ['dancu','qr','bank','tools','batch'].forEach(t=>{
+    document.getElementById('p-'+t).style.display=t===id?'':'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+}
+
+// ── DÂN CƯ ────────────────────────────────────────────────────
+let lastPerson=null;
+function gen(){
+  const person=genPerson();
+  lastPerson=person;
+  const bg=person.gioiTinh==="Nam"?"rgba(59,130,246,.25)":"rgba(236,72,153,.2)";
+  const col=person.gioiTinh==="Nam"?"#60a5fa":"#f472b6";
+  document.getElementById('badge-gender').textContent=person.gioiTinh==="Nam"?"♂ Nam":"♀ Nữ";
+  document.getElementById('badge-gender').style.cssText=`background:${bg};color:${col};border:1px solid ${col}40`;
+  const fields=[
+    ["Họ và tên",person.hoTen],["Số CCCD/CMND",person.cccd],["Ngày sinh",person.ngaySinh],
+    ["Giới tính",person.gioiTinh],["Quê quán",person.queQuan],
+    ["Địa chỉ thường trú",person.diaChiThuongTru],["Số điện thoại",person.soDienThoai],["Email",person.email],
+  ];
+  document.getElementById('dc-card').innerHTML=fields.map(([l,v])=>frow(l,v)).join('');
+  const extra=[
+    ["Dân tộc",person.danToc],["Tôn giáo",person.tonGiao],
+    ["Nghề nghiệp",person.ngheNghiep],["Tỉnh/Thành phố",person.tinh],
+  ];
+  document.getElementById('dc-extra').innerHTML=extra.map(([l,v])=>frow(l,v)).join('');
+}
+function frow(label,val){
+  const id='fv-'+Math.random().toString(36).slice(2,8);
+  return`<div class="fr"><span class="fl">${label}</span><span class="fv" id="${id}">${escH(val)}</span><button class="cb" onclick="cp('${id}',this)">Sao chép</button></div>`;
+}
+function cp(id,btn){
+  const val=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(val).then(()=>{
+    btn.textContent='✓ Đã chép';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='Sao chép';btn.classList.remove('ok')},1800);
+  }).catch(()=>{const t=document.createElement('textarea');t.value=val;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);btn.textContent='✓ Đã chép';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Sao chép';btn.classList.remove('ok')},1800);});
+}
+
+// ── QR CODE ───────────────────────────────────────────────────
+let curQT='text';
+const qrForms={
+  text:`<div class="il"><label>Nội dung văn bản</label><textarea class="fi" id="qr-text" rows="3" placeholder="Nhập văn bản bất kỳ..."></textarea></div>`,
+  url:`<div class="il"><label>URL / Đường dẫn</label><input class="fi" id="qr-url" placeholder="https://example.com"></div>`,
+  wifi:`<div class="g2"><div class="il"><label>Tên mạng WiFi (SSID)</label><input class="fi" id="qr-ssid" placeholder="TenMangWifi"></div><div class="il"><label>Mật khẩu</label><input class="fi" id="qr-wpass" placeholder="Mật khẩu WiFi"></div></div><div class="il"><label>Bảo mật</label><select class="fi" id="qr-wsec"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="">Không có</option></select></div>`,
+  phone:`<div class="il"><label>Số điện thoại</label><input class="fi" id="qr-phone" placeholder="+84912345678"></div>`,
+  email:`<div class="g2"><div class="il"><label>Địa chỉ email</label><input class="fi" id="qr-eto" placeholder="example@gmail.com"></div><div class="il"><label>Tiêu đề</label><input class="fi" id="qr-esub" placeholder="Tiêu đề email"></div></div><div class="il"><label>Nội dung</label><textarea class="fi" id="qr-ebody" rows="2" placeholder="Nội dung email..."></textarea></div>`,
+  vcard:`<div class="g2"><div class="il"><label>Họ và tên</label><input class="fi" id="qr-vname" placeholder="Nguyễn Văn A"></div><div class="il"><label>Điện thoại</label><input class="fi" id="qr-vphone" placeholder="0912345678"></div></div><div class="g2"><div class="il"><label>Email</label><input class="fi" id="qr-vemail" placeholder="example@gmail.com"></div><div class="il"><label>Công ty</label><input class="fi" id="qr-vorg" placeholder="Công ty ABC"></div></div><div class="il"><label>Website</label><input class="fi" id="qr-vweb" placeholder="https://example.com"></div><div class="il"><label>Địa chỉ</label><input class="fi" id="qr-vadr" placeholder="123 Nguyễn Huệ, Q1, TP.HCM"></div>`,
+  geo:`<div class="g2"><div class="il"><label>Vĩ độ (Latitude)</label><input class="fi" id="qr-lat" placeholder="10.7769" value="10.7769"></div><div class="il"><label>Kinh độ (Longitude)</label><input class="fi" id="qr-lng" placeholder="106.7009" value="106.7009"></div></div>`,
+  sms:`<div class="g2"><div class="il"><label>Số điện thoại</label><input class="fi" id="qr-sphone" placeholder="+84912345678"></div><div class="il"><label>Nội dung tin nhắn</label><input class="fi" id="qr-smsg" placeholder="Xin chào!"></div></div>`,
+};
+function setQT(t,btn){
+  curQT=t;
+  document.querySelectorAll('#p-qr .bb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('qr-form').innerHTML=qrForms[t]||'';
+}
+document.getElementById('qr-form').innerHTML=qrForms.text;
+
+function getQRData(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():''};
+  switch(curQT){
+    case'text': return g('qr-text');
+    case'url': return g('qr-url')||'https://example.com';
+    case'wifi': return`WIFI:T:${g('qr-wsec')};S:${g('qr-ssid')};P:${g('qr-wpass')};;`;
+    case'phone': return'tel:'+g('qr-phone');
+    case'email': return`mailto:${g('qr-eto')}?subject=${encodeURIComponent(g('qr-esub'))}&body=${encodeURIComponent(g('qr-ebody'))}`;
+    case'vcard': return`BEGIN:VCARD\nVERSION:3.0\nFN:${g('qr-vname')}\nTEL:${g('qr-vphone')}\nEMAIL:${g('qr-vemail')}\nORG:${g('qr-vorg')}\nURL:${g('qr-vweb')}\nADR:;;${g('qr-vadr')};;;\nEND:VCARD`;
+    case'geo': return`geo:${g('qr-lat')},${g('qr-lng')}`;
+    case'sms': return`sms:${g('qr-sphone')}?body=${encodeURIComponent(g('qr-smsg'))}`;
+    default: return'';
+  }
+}
+function genQR(){
+  const data=getQRData();
+  if(!data){alert('Vui lòng nhập thông tin trước!');return}
+  const box=document.getElementById('qr-preview');
+  box.innerHTML='<div id="qr-canvas" style="background:#fff;padding:14px;border-radius:10px;display:inline-block"></div>';
+  try{
+    new QRCode(document.getElementById('qr-canvas'),{text:data,width:230,height:230,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+    document.getElementById('qr-data-text').innerHTML=`<div style="margin-top:4px"><div style="font-size:11px;color:#64748b;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Dữ liệu QR</div><div class="out">${escH(data.substring(0,300))}${data.length>300?'…':''}</div></div>`;
+  }catch(e){box.innerHTML='<p style="color:#f87171">Lỗi tạo QR: '+e.message+'</p>';}
+}
+
+// ── VIETQR ────────────────────────────────────────────────────
+let selBank=null;
+function initBanks(){
+  document.getElementById('bank-grid').innerHTML=BANKS.map((b,i)=>`<button class="bb" id="bk-${i}" onclick="selB(${i},this)"><strong style="font-size:13px">${b.s}</strong><br><span style="font-size:10px;color:#64748b">${b.n}</span></button>`).join('');
+}
+function selB(i,btn){
+  selBank=BANKS[i];
+  document.querySelectorAll('#bank-grid .bb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+initBanks();
+
+function tlv(id,val){return id+String(val.length).padStart(2,'0')+val}
+function crc16(s){
+  let c=0xFFFF;
+  for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021):(c<<1)}
+  return c&0xFFFF;
+}
+function buildVietQR(bin,acct,amt,desc,name){
+  const ni=tlv('00','A000000727')+tlv('01',bin)+tlv('02',acct);
+  let d=tlv('00','01')+tlv('01','12')+tlv('38',ni)+tlv('52','0000')+tlv('53','704');
+  if(amt&&Number(amt)>0)d+=tlv('54',String(Number(amt)));
+  d+=tlv('58','VN');
+  if(name)d+=tlv('59',rmAcc(name).toUpperCase().substring(0,25));
+  d+=tlv('60','Ho Chi Minh');
+  if(desc){d+=tlv('62',tlv('08',rmAcc(desc).substring(0,25)));}
+  d+='6304';
+  const crc=crc16(d);
+  return d+crc.toString(16).toUpperCase().padStart(4,'0');
+}
+function genBankQR(){
+  if(!selBank){alert('Vui lòng chọn ngân hàng!');return}
+  const acct=document.getElementById('b-acct').value.trim();
+  if(!acct){alert('Vui lòng nhập số tài khoản!');return}
+  const name=document.getElementById('b-name').value.trim();
+  const amt=document.getElementById('b-amt').value;
+  const desc=document.getElementById('b-desc').value.trim()||'Chuyen tien';
+  const qrStr=buildVietQR(selBank.b,acct,amt,desc,name);
+  const box=document.getElementById('bank-preview');
+  box.innerHTML='<div id="bank-qr-canvas" style="background:#fff;padding:14px;border-radius:10px;display:inline-block"></div>';
+  try{
+    new QRCode(document.getElementById('bank-qr-canvas'),{text:qrStr,width:250,height:250,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+    document.getElementById('bank-info').innerHTML=`<div class="card" style="margin-top:0">
+      ${frow2('Ngân hàng',selBank.n+' ('+selBank.s+')')}
+      ${frow2('Số tài khoản',acct)}
+      ${name?frow2('Tên chủ TK',name):''}
+      ${amt&&Number(amt)>0?frow2('Số tiền',Number(amt).toLocaleString('vi-VN')+' ₫'):''}
+      ${frow2('Nội dung CK',desc)}
+      ${frow2('Chuẩn QR','VietQR – EMVCo QRCPS')}
+    </div>`;
+  }catch(e){box.innerHTML='<p style="color:#f87171">Lỗi: '+e.message+'</p>';}
+}
+function frow2(l,v){
+  const id='r2-'+Math.random().toString(36).slice(2,8);
+  return`<div class="fr"><span class="fl">${l}</span><span class="fv" id="${id}">${escH(v)}</span><button class="cb" onclick="cp('${id}',this)">Sao chép</button></div>`;
+}
+
+// ── TOOLS ─────────────────────────────────────────────────────
+let uvMode='v4';
+function setUV(m,btn){uvMode=m;document.querySelectorAll('#p-tools .bb').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+function genPW(){
+  const len=parseInt(document.getElementById('pw-len').value);
+  let chars='';
+  if(document.getElementById('pw-lo').checked)chars+='abcdefghijklmnopqrstuvwxyz';
+  if(document.getElementById('pw-up').checked)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if(document.getElementById('pw-num').checked)chars+='0123456789';
+  if(document.getElementById('pw-sym').checked)chars+='!@#$%^&*()-_=+[]{}|;:,.<>?';
+  if(!chars)chars='abcdefghijklmnopqrstuvwxyz0123456789';
+  let pw='';for(let i=0;i<len;i++)pw+=chars[ri(0,chars.length-1)];
+  const strength=len>=16&&/[A-Z]/.test(pw)&&/[0-9]/.test(pw)&&/[^a-zA-Z0-9]/.test(pw)?'💪 Rất mạnh':len>=12?'✅ Mạnh':len>=8?'⚠️ Trung bình':'❌ Yếu';
+  const id='pw-val-'+Date.now();
+  document.getElementById('pw-out').innerHTML=`<div class="out" id="${id}" style="font-size:16px;letter-spacing:1.5px;word-break:break-all">${pw}</div><div style="display:flex;gap:8px;margin-top:10px;align-items:center"><button class="cb" onclick="cp('${id}',this)">Sao chép</button><button class="pb2" style="font-size:12px;padding:6px 12px" onclick="genPW()">↻ Tạo lại</button><span style="font-size:12px;color:#94a3b8">${strength}</span></div>`;
+}
+function uuidv4(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)});}
+function nanoId(len=21){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';let s='';for(let i=0;i<len;i++)s+=c[ri(0,c.length-1)];return s;}
+function genUUIDs(){
+  const n=Math.min(50,Math.max(1,parseInt(document.getElementById('uuid-count').value)||5));
+  const ids=[];
+  for(let i=0;i<n;i++){
+    if(uvMode==='v4')ids.push(uuidv4());
+    else if(uvMode==='v1')ids.push(Date.now().toString(16).padStart(8,'0')+uuidv4().substring(8));
+    else ids.push(nanoId());
+  }
+  const id='uuid-list-'+Date.now();
+  document.getElementById('uuid-out').innerHTML=`<div class="out" id="${id}" style="white-space:pre-line">${ids.join('\n')}</div><button class="cb" onclick="cp('${id}',this)" style="margin-top:8px">Sao chép tất cả</button>`;
+}
+function b64enc(){
+  try{const v=document.getElementById('b64-in').value;const enc=btoa(unescape(encodeURIComponent(v)));const id='b64e-'+Date.now();document.getElementById('b64-out').innerHTML=`<div class="out" id="${id}">${enc}</div><button class="cb" onclick="cp('${id}',this)" style="margin-top:8px">Sao chép</button>`;}
+  catch(e){document.getElementById('b64-out').innerHTML='<p style="color:#f87171;font-size:13px">Lỗi encode: '+e.message+'</p>';}
+}
+function b64dec(){
+  try{const v=document.getElementById('b64-in').value;const dec=decodeURIComponent(escape(atob(v)));const id='b64d-'+Date.now();document.getElementById('b64-out').innerHTML=`<div class="out" id="${id}">${escH(dec)}</div><button class="cb" onclick="cp('${id}',this)" style="margin-top:8px">Sao chép</button>`;}
+  catch(e){document.getElementById('b64-out').innerHTML='<p style="color:#f87171;font-size:13px">Lỗi decode – không phải Base64 hợp lệ</p>';}
+}
+function fmtVND(){
+  const v=document.getElementById('vnd-num').value;
+  if(!v){document.getElementById('vnd-out').textContent='—';return}
+  const n=Number(v);
+  document.getElementById('vnd-out').innerHTML=`<strong style="font-size:16px">${n.toLocaleString('vi-VN')} ₫</strong><br><span style="font-size:11px;color:#94a3b8">${numToWords(n)} đồng</span>`;
+}
+function numToWords(n){
+  if(n===0)return'Không';if(n<0)return'Âm '+numToWords(-n);
+  const u=['','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
+  const t=['','mười','hai mươi','ba mươi','bốn mươi','năm mươi','sáu mươi','bảy mươi','tám mươi','chín mươi'];
+  function h(n){if(n===0)return'';const H=Math.floor(n/100),T=Math.floor((n%100)/10),U=n%10;let r=H>0?u[H]+' trăm':'';if(T>0)r+=(r?' ':'')+t[T]+(U>0?' '+u[U]:'');else if(U>0)r+=(r?' lẻ ':'')+u[U];return r;}
+  if(n>=1e9)return h(Math.floor(n/1e9))+' tỷ '+(n%1e9?numToWords(n%1e9):'');
+  if(n>=1e6)return h(Math.floor(n/1e6))+' triệu '+(n%1e6?numToWords(n%1e6):'');
+  if(n>=1e3)return h(Math.floor(n/1e3))+' nghìn '+(n%1e3?numToWords(n%1e3):'');
+  return h(n);
+}
+function encURL(){
+  const v=document.getElementById('url-in').value;
+  if(!v){document.getElementById('url-out').innerHTML='';return}
+  const id1='ue-'+Date.now(),id2='ud-'+Date.now();
+  document.getElementById('url-out').innerHTML=`<div style="margin-top:10px"><div style="font-size:11px;color:#64748b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">encodeURIComponent:</div><div class="out" id="${id1}">${encodeURIComponent(v)}</div><button class="cb" onclick="cp('${id1}',this)" style="margin-top:6px">Sao chép</button></div><div style="margin-top:12px"><div style="font-size:11px;color:#64748b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">encodeURI:</div><div class="out" id="${id2}">${encodeURI(v)}</div><button class="cb" onclick="cp('${id2}',this)" style="margin-top:6px">Sao chép</button></div>`;
+}
+function genColor(){
+  const colors=[];
+  for(let i=0;i<6;i++){
+    const h=ri(0,360),s=ri(40,90),l=ri(35,65);
+    const hex='#'+hslToHex(h,s,l);
+    colors.push({h,s,l,hex,rgb:hexToRgb(hex)});
+  }
+  document.getElementById('color-out').innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+    ${colors.map(c=>{const id='col-'+Math.random().toString(36).slice(2,6);return`<div style="border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.08)"><div style="height:60px;background:${c.hex}"></div><div style="padding:8px 10px;background:#151824"><div class="out" id="${id}" style="font-size:12px;padding:4px 6px">${c.hex}</div><div style="font-size:10px;color:#64748b;margin-top:3px">rgb(${c.rgb.r},${c.rgb.g},${c.rgb.b})</div><button class="cb" onclick="cp('${id}',this)" style="margin-top:5px;font-size:10px">Sao chép</button></div></div>`;}).join('')}
+  </div>`;
+}
+function hslToHex(h,s,l){s/=100;l/=100;const k=n=>(n+h/30)%12;const a=s*Math.min(l,1-l);const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return[f(0),f(8),f(4)].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('');}
+function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return{r,g,b};}
+
+// ── BATCH ─────────────────────────────────────────────────────
+let batchData=[];
+function genBatch(){
+  const n=Math.min(100,Math.max(1,parseInt(document.getElementById('bt-count').value)||10));
+  const fg=document.getElementById('bt-gender').value;
+  batchData=[];
+  for(let i=0;i<n;i++)batchData.push(genPerson(fg==='random'?null:fg));
+  const rows=batchData.map((p,i)=>`<tr><td style="padding:8px 10px;font-size:12px;color:#64748b">${i+1}</td><td style="padding:8px 10px;font-size:13px;font-weight:500">${escH(p.hoTen)}</td><td style="padding:8px 10px;font-size:12px">${p.gioiTinh}</td><td style="padding:8px 10px;font-size:12px">${p.ngaySinh}</td><td style="padding:8px 10px;font-size:12px;font-family:monospace">${p.cccd}</td><td style="padding:8px 10px;font-size:12px">${p.soDienThoai}</td><td style="padding:8px 10px;font-size:11px;color:#94a3b8">${p.email}</td><td style="padding:8px 10px;font-size:11px;color:#64748b">${escH(p.queQuan)}</td></tr>`).join('');
+  document.getElementById('batch-out').innerHTML=`<div class="card" style="overflow-x:auto;padding:0"><table class="data-table"><thead><tr><th>#</th><th>Họ tên</th><th>GT</th><th>Ngày sinh</th><th>CCCD</th><th>SĐT</th><th>Email</th><th>Quê quán</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function copyBatch(){
+  if(!batchData.length){alert('Tạo danh sách trước!');return}
+  const hdr='Họ tên,Giới tính,Ngày sinh,CCCD,SĐT,Email,Quê quán,Địa chỉ thường trú';
+  const rows=batchData.map(p=>`"${p.hoTen}","${p.gioiTinh}","${p.ngaySinh}","${p.cccd}","${p.soDienThoai}","${p.email}","${p.queQuan}","${p.diaChiThuongTru}"`).join('\n');
+  navigator.clipboard.writeText(hdr+'\n'+rows).then(()=>alert('Đã sao chép '+batchData.length+' dòng CSV!'));
+}
+function copyBatchJSON(){
+  if(!batchData.length){alert('Tạo danh sách trước!');return}
+  navigator.clipboard.writeText(JSON.stringify(batchData,null,2)).then(()=>alert('Đã sao chép JSON ('+batchData.length+' người)!'));
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+gen();
+</script>
+</body>
+</html>
